@@ -51,12 +51,12 @@ class DCConClient:
         main_image_url = f"https://dcimg5.dcinside.com/dccon.php?no={dccon.raw['info']['main_img_path']}"
         dccon.images.make_urls_from_path()
 
-        download_futures = [self.fetch_and_save(self.session, main_image_url, f"{dest}/{safe_title}/main.jpg")]
+        download_futures = [self.fetch_and_save(self.session, main_image_url, f"{dest}/{dccon.index} - {safe_title}/main.jpg")]
         download_futures += [
             self.fetch_and_save(
                 self.session, 
                 image.url, 
-                f"{dest}/{safe_title}/{str(seq).zfill(2)}_{re.sub(filename_safe, '', image.title)}.{image.ext}"
+                f"{dest}/{dccon.index} - {safe_title}/{str(seq).zfill(2)}_{re.sub(filename_safe, '', image.title)}.{image.ext}"
             ) for seq, image in enumerate(dccon.images.images)
         ]
 
@@ -64,7 +64,7 @@ class DCConClient:
             result = await asyncio.shield(download_future)
             # print('finished:', result)
 
-        async with aiofiles.open(f"{dest}/ {safe_title}/package_info.json", mode='w', encoding="utf-8") as fp:
+        async with aiofiles.open(f"{dest}/{dccon.index} - {safe_title}/package_info.json", mode='w', encoding="utf-8") as fp:
             await fp.write(json.dumps(dccon.raw, ensure_ascii=False))
         
         return
